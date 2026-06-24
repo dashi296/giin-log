@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath } from "node:url"
 
 export const MIGRATIONS_FOLDER = fileURLToPath(
-  new URL('../drizzle', import.meta.url),
-);
+  new URL("../drizzle", import.meta.url),
+)

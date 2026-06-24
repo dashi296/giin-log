@@ -34,6 +34,7 @@
 ### ツール
 
 - lint: **oxlint**、format: **oxfmt**(oxfmt は新しめ。不安定時は一時的に prettier 退避可)。
+  - oxfmt `^0.1.0` には、複数プロパティのインライン型リテラル(例: `{ A: number; B: string }`)からセミコロンを除去して構文エラーにするバグがある。複数プロパティの型注釈・キャストは**名前付き型エイリアス(または複数行)**で書くこと。ユーザー判断で oxfmt を維持(prettier 退避はしない)。
 - 検証: **Valibot**(Zod ではない)。
 - CI: GitHub Actions で PR ごとに lint/typecheck/test。収集 cron とは別ワークフロー。
 
