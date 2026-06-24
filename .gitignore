@@ -31,3 +31,6 @@ npm-debug.log*
 # local D1 sqlite
 *.sqlite
 *.sqlite3
+
+# git worktrees
+.worktrees/
