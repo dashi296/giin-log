@@ -14,6 +14,7 @@ export const councilors = sqliteTable('councilors', {
   name: text('name').notNull(),
   nameKana: text('name_kana'),
   photoUrl: text('photo_url'),
+  sourceUrl: text('source_url').notNull(),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
@@ -27,6 +28,10 @@ export const terms = sqliteTable('terms', {
   name: text('name').notNull().unique(),
   startsOn: text('starts_on').notNull(),
   endsOn: text('ends_on'),
+  sourceUrl: text('source_url').notNull(),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
 });
 
 export const memberships = sqliteTable(
@@ -45,6 +50,10 @@ export const memberships = sqliteTable(
     phone: text('phone'),
     committees: text('committees'),
     roles: text('roles'),
+    sourceUrl: text('source_url').notNull(),
+    updatedAt: text('updated_at')
+      .notNull()
+      .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
   },
   (t) => ({
     uq: uniqueIndex('uq_memberships_councilor_term').on(t.councilorId, t.termId),
@@ -63,6 +72,9 @@ export const meetings = sqliteTable(
     name: text('name').notNull(),
     heldOn: text('held_on').notNull(),
     sourceUrl: text('source_url').notNull(),
+    updatedAt: text('updated_at')
+      .notNull()
+      .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
   },
   (t) => ({
     uq: uniqueIndex('uq_meetings_natural').on(
@@ -72,9 +84,12 @@ export const meetings = sqliteTable(
       t.heldOn,
     ),
     termIdx: index('idx_meetings_term').on(t.termId),
+    kindChk: check('meetings_kind_check', sql`${t.kind} IN ('本会議','委員会')`),
   }),
 );
 
+// 出席(attendances)に source_url 列は持たせない。
+// 出席の出典は親の meetings.source_url を継承する(会議録ページに出欠が載るため)。
 export const attendances = sqliteTable(
   'attendances',
   {
@@ -86,6 +101,9 @@ export const attendances = sqliteTable(
       .notNull()
       .references(() => councilors.id),
     status: text('status', { enum: ['present', 'absent'] }).notNull(),
+    updatedAt: text('updated_at')
+      .notNull()
+      .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
   },
   (t) => ({
     uq: uniqueIndex('uq_attendances_meeting_councilor').on(
@@ -120,6 +138,9 @@ export const statements = sqliteTable(
     bodyTokenized: text('body_tokenized'),
     topics: text('topics'),
     sourceUrl: text('source_url').notNull(),
+    updatedAt: text('updated_at')
+      .notNull()
+      .default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ','now'))`),
   },
   (t) => ({
     uq: uniqueIndex('uq_statements_natural').on(

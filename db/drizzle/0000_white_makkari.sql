@@ -1,5 +1,6 @@
 -- NOTE: drizzle-kit 0.24 does not emit CHECK constraints from the schema's check() builder.
--- The `attendances_status_check` and `statements_kind_check` constraints below were added MANUALLY.
+-- The `attendances_status_check`, `statements_kind_check` and `meetings_kind_check` constraints
+-- below were added MANUALLY after generation.
 -- Drizzle migrations are immutable once committed, so this file is the source of truth.
 -- When generating a NEW migration that adds an enum column, manually re-add its CHECK constraint
 -- to the generated SQL (drizzle-kit will not do it for you on this version).
@@ -8,6 +9,7 @@ CREATE TABLE `attendances` (
 	`meeting_id` integer NOT NULL,
 	`councilor_id` integer NOT NULL,
 	`status` text NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL,
 	FOREIGN KEY (`meeting_id`) REFERENCES `meetings`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`councilor_id`) REFERENCES `councilors`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT `attendances_status_check` CHECK (`status` IN ('present','absent'))
@@ -19,6 +21,7 @@ CREATE TABLE `councilors` (
 	`name` text NOT NULL,
 	`name_kana` text,
 	`photo_url` text,
+	`source_url` text NOT NULL,
 	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL,
 	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL
 );
@@ -30,7 +33,9 @@ CREATE TABLE `meetings` (
 	`name` text NOT NULL,
 	`held_on` text NOT NULL,
 	`source_url` text NOT NULL,
-	FOREIGN KEY (`term_id`) REFERENCES `terms`(`id`) ON UPDATE no action ON DELETE no action
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL,
+	FOREIGN KEY (`term_id`) REFERENCES `terms`(`id`) ON UPDATE no action ON DELETE no action,
+	CONSTRAINT `meetings_kind_check` CHECK (`kind` IN ('本会議','委員会'))
 );
 --> statement-breakpoint
 CREATE TABLE `memberships` (
@@ -43,6 +48,8 @@ CREATE TABLE `memberships` (
 	`phone` text,
 	`committees` text,
 	`roles` text,
+	`source_url` text NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL,
 	FOREIGN KEY (`councilor_id`) REFERENCES `councilors`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`term_id`) REFERENCES `terms`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -58,6 +65,7 @@ CREATE TABLE `statements` (
 	`body_tokenized` text,
 	`topics` text,
 	`source_url` text NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL,
 	FOREIGN KEY (`meeting_id`) REFERENCES `meetings`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`councilor_id`) REFERENCES `councilors`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT `statements_kind_check` CHECK (`kind` IN ('general_question','question','discussion','other'))
@@ -67,7 +75,9 @@ CREATE TABLE `terms` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`starts_on` text NOT NULL,
-	`ends_on` text
+	`ends_on` text,
+	`source_url` text NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')) NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_attendances_meeting_councilor` ON `attendances` (`meeting_id`,`councilor_id`);--> statement-breakpoint
