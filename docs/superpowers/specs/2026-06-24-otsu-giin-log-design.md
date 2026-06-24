@@ -88,20 +88,37 @@
 - **表示: TanStack Start + Cloudflare Workers** — Server Functions / loader から `env.DB` 経由で D1 を直接クエリ。
 - **収集: Node/TypeScript** — cheerio(HTML パース)、iconv-lite(Shift-JIS デコード)、kuromoji.js(日本語分かち書き)。GitHub Actions の cron(例: 月1)で定期実行。手動実行も可能。
 - **収集→DB: D1 HTTP API (REST)** — Cloudflare 外(Actions)から D1 へバッチ投入。リクエスト上限に合わせて分割。
-- **マイグレーション: `wrangler d1 migrations`**。スキーマから TypeScript 型を生成し web/scraper で共有。
+- **ORM/マイグレーション: Drizzle ORM + drizzle-kit**。スキーマを TypeScript で単一定義し、行の型は `$inferSelect`/`$inferInsert` で導出。テーブル・型・型安全クエリ/upsert は Drizzle、FTS5 仮想テーブル・同期トリガー・集計ビューは Drizzle が表現できないため生 SQL のカスタムマイグレーションで補う(ハイブリッド)。本番は wrangler 経由で D1 に適用、テストは Drizzle の better-sqlite3 マイグレータで同じマイグレーションを検証。
+- **検証: Valibot**(scraper の境界でパース結果を検証)。**lint/format: oxlint + oxfmt**。**CI: GitHub Actions**(PR で lint/typecheck/test)。
 
 リポジトリ構成(pnpm workspace モノレポ):
 
 ```
 giin-log/
-├── web/            # TanStack Start アプリ + wrangler 設定 + D1 binding
-├── scraper/        # Node 収集スクリプト群 + パーサ単体テスト
-├── db/             # D1 マイグレーション(SQL) + 共有 TypeScript 型
-├── .github/workflows/   # 収集の定期実行 cron
+├── web/            # TanStack Start アプリ(Feature-Sliced Design) + wrangler 設定 + D1 binding
+├── scraper/        # Node 収集スクリプト群 + パーサ単体テスト(Valibot 検証)
+├── db/             # Drizzle スキーマ + マイグレーション + 推論された共有型
+├── .github/workflows/   # CI(lint/typecheck/test) + 収集の定期実行 cron
 ├── docs/
 ├── CLAUDE.md
 └── README.md
 ```
+
+### web の内部構成(Feature-Sliced Design)
+
+web パッケージは FSD で構成する(db/scraper は対象外)。**pages レイヤーは置かず、TanStack Router のファイルベースルーティングが pages 相当の「薄い合成層」を担う**。
+
+```
+web/src/
+├── routes/      # TanStack Router ファイルベースルーティング(各レイヤーを合成)
+├── app/         # プロバイダ・ルートレイアウト・全体スタイル
+├── widgets/     # 複合UIブロック(任意)
+├── features/    # ユーザー操作(発言検索・会派フィルタ・並べ替え)
+├── entities/    # 業務エンティティ(councilor / statement / meeting / term):model + ui + api
+└── shared/      # UIキット・lib・config・D1アクセス(drizzle-orm/d1 + @giin-log/db のスキーマ共有)
+```
+
+依存ルール: 上位は下位のみ import 可(`routes → widgets → features → entities → shared`)。`entities/*` の型は `@giin-log/db` の推論型を再 export して用いる。
 
 ## 5. データモデル (D1 / SQLite)
 

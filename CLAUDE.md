@@ -13,9 +13,28 @@
 
 3 コンポーネントを疎結合で構成する(収集が壊れても表示は落ちない)。
 
-- `scraper/` — Node/TypeScript の収集スクリプト。GitHub Actions cron で定期実行。D1 HTTP API で書き込む。
-- `db/` — Cloudflare D1 (SQLite) のマイグレーションと共有 TypeScript 型。
-- `web/` — TanStack Start アプリ。Cloudflare Workers にデプロイし、`env.DB` 経由で D1 を直接クエリ。
+- `scraper/` — Node/TypeScript の収集スクリプト。GitHub Actions cron で定期実行。D1 HTTP API で書き込む。Valibot でパース結果を検証。
+- `db/` — Drizzle ORM のスキーマ(単一情報源)+ マイグレーション + 推論された共有型。Cloudflare D1 (SQLite)。
+- `web/` — TanStack Start アプリ。Cloudflare Workers にデプロイし、`env.DB` 経由で D1 を直接クエリ。**Feature-Sliced Design** で構成。
+
+### DB(Drizzle ハイブリッド)
+
+- スキーマは `db/src/schema.ts` の Drizzle 定義が単一情報源。行の型は `$inferSelect`/`$inferInsert` で導出し、**手書き型を作らない**。
+- テーブル・列挙(enum + check)・型安全クエリ/upsert は Drizzle。**FTS5 仮想テーブル・同期トリガー・集計ビューは Drizzle で表現できない**ため、生 SQL のカスタムマイグレーション(`drizzle-kit generate --custom`)で補う。
+- マイグレーションは drizzle-kit 生成。本番は wrangler 経由で D1 に適用、テストは `drizzle-orm/better-sqlite3` のマイグレータで同じマイグレーションを適用して検証(ネットワーク非依存)。
+
+### web(Feature-Sliced Design)
+
+- レイヤー: `routes / app / widgets / features / entities / shared`。**pages レイヤーは置かない** — TanStack Router のファイルベースルーティング(`web/src/routes/`)が pages 相当の薄い合成層を担う。
+- 依存ルール: 上位は下位のみ import 可(`routes → widgets → features → entities → shared`)。逆方向・同一レイヤー間の依存を作らない。
+- `entities/*` の型は `@giin-log/db` の推論型を再 export して用いる。
+- FSD は web のみに適用。db/scraper は通常のパッケージ構成。
+
+### ツール
+
+- lint: **oxlint**、format: **oxfmt**(oxfmt は新しめ。不安定時は一時的に prettier 退避可)。
+- 検証: **Valibot**(Zod ではない)。
+- CI: GitHub Actions で PR ごとに lint/typecheck/test。収集 cron とは別ワークフロー。
 
 ## 重要な制約・規約
 
@@ -42,6 +61,10 @@
 
 ```sh
 pnpm install
+# テスト一括:      pnpm test
+# lint / format:   pnpm lint / pnpm format
+# 型チェック:      pnpm typecheck
+# マイグレ生成:    pnpm --filter @giin-log/db db:generate
 # web 開発:        pnpm --filter web dev
 # スクレイプ実行:  pnpm --filter scraper start
 # D1 マイグレート: pnpm --filter web exec wrangler d1 migrations apply <DB_NAME>
