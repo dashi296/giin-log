@@ -1,7 +1,9 @@
 import { sql } from 'drizzle-orm';
 import {
   sqliteTable,
+  sqliteView,
   integer,
+  real,
   text,
   uniqueIndex,
   index,
@@ -156,3 +158,11 @@ export const statements = sqliteTable(
     ),
   }),
 );
+
+export const councilorStats = sqliteView('councilor_stats', {
+  councilorId: integer('councilor_id').notNull(),
+  termId: integer('term_id').notNull(),
+  generalQuestionCount: integer('general_question_count').notNull(),
+  statementCount: integer('statement_count').notNull(),
+  honkaigiAttendanceRate: real('honkaigi_attendance_rate'),
+}).existing();

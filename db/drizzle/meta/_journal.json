@@ -15,6 +15,13 @@
       "when": 1782339384742,
       "tag": "0001_fts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782339558799,
+      "tag": "0002_views",
+      "breakpoints": true
     }
   ]
 }
