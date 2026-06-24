@@ -8,6 +8,13 @@
       "when": 1782322628447,
       "tag": "0000_white_makkari",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782339384742,
+      "tag": "0001_fts",
+      "breakpoints": true
     }
   ]
 }
