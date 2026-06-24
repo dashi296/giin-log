@@ -1,3 +1,8 @@
+-- NOTE: drizzle-kit 0.24 does not emit CHECK constraints from the schema's check() builder.
+-- The `attendances_status_check` and `statements_kind_check` constraints below were added MANUALLY.
+-- Drizzle migrations are immutable once committed, so this file is the source of truth.
+-- When generating a NEW migration that adds an enum column, manually re-add its CHECK constraint
+-- to the generated SQL (drizzle-kit will not do it for you on this version).
 CREATE TABLE `attendances` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`meeting_id` integer NOT NULL,
