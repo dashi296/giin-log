@@ -34,3 +34,6 @@ npm-debug.log*
 
 # git worktrees
 .worktrees/
+
+# superpowers SDD scratch
+.superpowers/
