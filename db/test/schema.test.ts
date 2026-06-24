@@ -162,4 +162,81 @@ describe('core schema', () => {
         .run();
     expect(bad).toThrow(/NOT NULL/);
   });
+
+  it('enforces attendances natural-key uniqueness', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    sqlite.exec(`
+      INSERT INTO attendances (meeting_id, councilor_id, status) VALUES (1, 1, 'present');
+    `);
+    const dup = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO attendances (meeting_id, councilor_id, status) VALUES (1, 1, 'absent')`,
+        )
+        .run();
+    expect(dup).toThrow(/UNIQUE/);
+  });
+
+  it('enforces councilors.slug uniqueness', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    const dup = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO councilors (slug, name, source_url) VALUES ('taro', '別人', 'https://example.com/c2')`,
+        )
+        .run();
+    expect(dup).toThrow(/UNIQUE/);
+  });
+
+  it('enforces terms.name uniqueness', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    const dup = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO terms (name, starts_on, source_url) VALUES ('第1期', '2024-05-01', 'https://example.com/t2')`,
+        )
+        .run();
+    expect(dup).toThrow(/UNIQUE/);
+  });
+
+  it('requires provenance source_url on meetings', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    const bad = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO meetings (term_id, kind, name, held_on) VALUES (1, '本会議', '7月臨時会', '2026-07-01')`,
+        )
+        .run();
+    expect(bad).toThrow(/NOT NULL/);
+  });
+
+  it('requires provenance source_url on statements', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    const bad = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO statements (meeting_id, councilor_id, kind, sequence) VALUES (1, 1, 'general_question', 1)`,
+        )
+        .run();
+    expect(bad).toThrow(/NOT NULL/);
+  });
+
+  it('rejects an explicit NULL updated_at', () => {
+    const { sqlite } = makeTestDb();
+    seedBase(sqlite);
+    // DEFAULT は値省略時のみ適用される。明示的に NULL を渡すと NOT NULL 制約で弾かれる。
+    const bad = () =>
+      sqlite
+        .prepare(
+          `INSERT INTO meetings (term_id, kind, name, held_on, source_url, updated_at)
+           VALUES (1, '本会議', '7月臨時会', '2026-07-01', 'https://example.com/m3', NULL)`,
+        )
+        .run();
+    expect(bad).toThrow(/NOT NULL/);
+  });
 });
