@@ -1,0 +1,17 @@
+{
+  "name": "giin-log",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "pnpm -r test",
+    "lint": "oxlint",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "packageManager": "pnpm@9.7.0",
+  "devDependencies": {
+    "oxlint": "^0.9.0",
+    "oxfmt": "^0.1.0"
+  }
+}

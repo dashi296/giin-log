@@ -22,6 +22,7 @@
 - スキーマは `db/src/schema.ts` の Drizzle 定義が単一情報源。行の型は `$inferSelect`/`$inferInsert` で導出し、**手書き型を作らない**。
 - テーブル・列挙(enum + check)・型安全クエリ/upsert は Drizzle。**FTS5 仮想テーブル・同期トリガー・集計ビューは Drizzle で表現できない**ため、生 SQL のカスタムマイグレーション(`drizzle-kit generate --custom`)で補う。
 - マイグレーションは drizzle-kit 生成。本番は wrangler 経由で D1 に適用、テストは `drizzle-orm/better-sqlite3` のマイグレータで同じマイグレーションを適用して検証(ネットワーク非依存)。
+- **drizzle-kit 0.24 は schema の `check()` を生成 SQL に出力しない**ため、enum 列の CHECK 制約は生成後に手動で追記する必要がある(将来 drizzle-kit 上げで解消検討)。
 
 ### web(Feature-Sliced Design)
 
@@ -33,6 +34,7 @@
 ### ツール
 
 - lint: **oxlint**、format: **oxfmt**(oxfmt は新しめ。不安定時は一時的に prettier 退避可)。
+  - oxfmt `^0.1.0` には、複数プロパティのインライン型リテラル(例: `{ A: number; B: string }`)からセミコロンを除去して構文エラーにするバグがある。複数プロパティの型注釈・キャストは**名前付き型エイリアス(または複数行)**で書くこと。ユーザー判断で oxfmt を維持(prettier 退避はしない)。
 - 検証: **Valibot**(Zod ではない)。
 - CI: GitHub Actions で PR ごとに lint/typecheck/test。収集 cron とは別ワークフロー。
 
