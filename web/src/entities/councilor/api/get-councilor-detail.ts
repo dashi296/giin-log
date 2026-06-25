@@ -45,6 +45,12 @@ export async function getCouncilorDetail(
     .limit(1)
     .all()
 
+  // 一覧は現任期の memberships に絞っている。詳細も同じスコープに合わせ、
+  // 現任期に所属しない議員(過去任期のみ残る slug 等)はスコープ外として
+  // undefined を返す(ルートでは 404)。
+  const membership = membershipRows[0]
+  if (!membership) return undefined
+
   const statsRows = await db
     .select({
       generalQuestionCount: schema.councilorStats.generalQuestionCount,
@@ -88,7 +94,7 @@ export async function getCouncilorDetail(
 
   return {
     councilor,
-    membership: membershipRows[0],
+    membership,
     stats: statsRows[0],
     timeline: timelineRows,
   }

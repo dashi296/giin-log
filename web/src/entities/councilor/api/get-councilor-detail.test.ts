@@ -26,6 +26,22 @@ describe("getCouncilorDetail", () => {
     sqlite.close()
   })
 
+  it("returns undefined for a councilor not in the given term", async () => {
+    const { db, sqlite } = makeWebTestDb()
+    // 過去任期のみ在籍する議員(現任期 term 1 に membership 無し)
+    sqlite.exec(`
+      INSERT INTO terms (id, name, starts_on, ends_on, source_url)
+        VALUES (2, '第2期', '2019-05-01', '2023-04-30', 'https://example.com/t2');
+      INSERT INTO councilors (id, slug, name, source_url)
+        VALUES (3, 'former-giin', '元議員', 'https://example.com/c3');
+      INSERT INTO memberships (id, councilor_id, term_id, faction, source_url)
+        VALUES (3, 3, 2, '旧会派', 'https://example.com/m3');
+    `)
+    const d = await getCouncilorDetail(db, "former-giin", 1)
+    expect(d).toBeUndefined()
+    sqlite.close()
+  })
+
   it("scopes the timeline to the given term", async () => {
     const { db, sqlite } = makeWebTestDb()
     sqlite.exec(`
