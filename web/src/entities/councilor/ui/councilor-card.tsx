@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import {
   Card,
   CardContent,
@@ -14,7 +15,15 @@ export function CouncilorCard({ item }: { item: CouncilorListItem }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{item.name}</CardTitle>
+        <CardTitle>
+          <Link
+            to="/councilors/$slug"
+            params={{ slug: item.slug }}
+            className="hover:underline"
+          >
+            {item.name}
+          </Link>
+        </CardTitle>
         {item.faction ? <Badge>{item.faction}</Badge> : null}
       </CardHeader>
       <CardContent className="space-y-2">

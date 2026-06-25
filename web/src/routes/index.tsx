@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
 import { useState } from "react"
 import { getDb } from "@/shared/db/get-db"
 import { getCurrentTerm } from "@/entities/term/api/current-term"
@@ -13,14 +14,20 @@ import {
 } from "@/features/councilor-controls/model"
 import { todayIso } from "@/shared/lib/today"
 
-export const Route = createFileRoute("/")({
-  loader: async (): Promise<{ items: CouncilorListItem[] }> => {
+type CouncilorsPayload = { items: CouncilorListItem[] }
+
+const fetchCouncilors = createServerFn().handler(
+  async (): Promise<CouncilorsPayload> => {
     const db = getDb()
     const term = await getCurrentTerm(db, todayIso())
     if (!term) return { items: [] }
     const items = await listCouncilors(db, term.id)
     return { items }
   },
+)
+
+export const Route = createFileRoute("/")({
+  loader: async (): Promise<CouncilorsPayload> => fetchCouncilors(),
   component: CouncilorsPage,
 })
 
@@ -47,9 +54,7 @@ function CouncilorsPage() {
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((item) => (
               <li key={item.id}>
-                <Link to="/councilors/$slug" params={{ slug: item.slug }}>
-                  <CouncilorCard item={item} />
-                </Link>
+                <CouncilorCard item={item} />
               </li>
             ))}
           </ul>
