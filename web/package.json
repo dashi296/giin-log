@@ -9,7 +9,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "deploy": "vite build && wrangler deploy",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "wrangler types && tsc --noEmit",
     "test": "vitest run",
     "cf-typegen": "wrangler types",
     "generate-routes": "tsr generate"
@@ -57,11 +57,5 @@
     "vite": "^8.0.0",
     "vitest": "^3.2.6",
     "wrangler": "^4.70.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
   }
 }

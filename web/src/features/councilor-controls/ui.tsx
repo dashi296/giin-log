@@ -1,5 +1,9 @@
 import {
-  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/shared/ui"
 import type { SortKey } from "./model.js"
 
@@ -26,11 +30,15 @@ export function CouncilorControls({
           value={faction ?? ALL}
           onValueChange={(v) => onFactionChange(v === ALL ? null : v)}
         >
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>すべて</SelectItem>
             {factions.map((f) => (
-              <SelectItem key={f} value={f}>{f}</SelectItem>
+              <SelectItem key={f} value={f}>
+                {f}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -38,7 +46,9 @@ export function CouncilorControls({
       <label className="flex flex-col gap-1 text-sm">
         並べ替え
         <Select value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="kana">氏名(かな)</SelectItem>
             <SelectItem value="questions">一般質問が多い順</SelectItem>

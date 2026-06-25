@@ -8,9 +8,14 @@ export function factionsOf(items: CouncilorListItem[]): string[] {
   return [...set].sort((a, b) => a.localeCompare(b, "ja"))
 }
 
+type ApplyControlsOpts = {
+  faction: string | null
+  sort: SortKey
+}
+
 export function applyControls(
   items: CouncilorListItem[],
-  opts: { faction: string | null; sort: SortKey },
+  opts: ApplyControlsOpts,
 ): CouncilorListItem[] {
   const filtered = opts.faction
     ? items.filter((i) => i.faction === opts.faction)
@@ -22,7 +27,8 @@ export function applyControls(
   switch (opts.sort) {
     case "questions":
       return filtered.sort(
-        (a, b) => b.generalQuestionCount - a.generalQuestionCount || byKana(a, b),
+        (a, b) =>
+          b.generalQuestionCount - a.generalQuestionCount || byKana(a, b),
       )
     case "attendance":
       return filtered.sort((a, b) => {

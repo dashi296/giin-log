@@ -6,7 +6,11 @@ import { listCouncilors } from "@/entities/councilor/api/list-councilors"
 import type { CouncilorListItem } from "@/entities/councilor/model"
 import { CouncilorCard } from "@/entities/councilor/ui/councilor-card"
 import { CouncilorControls } from "@/features/councilor-controls/ui"
-import { applyControls, factionsOf, type SortKey } from "@/features/councilor-controls/model"
+import {
+  applyControls,
+  factionsOf,
+  type SortKey,
+} from "@/features/councilor-controls/model"
 import { todayIso } from "@/shared/lib/today"
 
 export const Route = createFileRoute("/")({

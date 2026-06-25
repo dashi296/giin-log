@@ -1,4 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle, Badge, Provenance, StatBadge } from "@/shared/ui"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Provenance,
+  StatBadge,
+} from "@/shared/ui"
 import type { CouncilorListItem } from "../model/index.js"
 
 function formatRate(rate: number | null): string {
@@ -14,8 +22,14 @@ export function CouncilorCard({ item }: { item: CouncilorListItem }) {
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex gap-2">
-          <StatBadge label="一般質問" value={String(item.generalQuestionCount)} />
-          <StatBadge label="本会議出席率" value={formatRate(item.honkaigiAttendanceRate)} />
+          <StatBadge
+            label="一般質問"
+            value={String(item.generalQuestionCount)}
+          />
+          <StatBadge
+            label="本会議出席率"
+            value={formatRate(item.honkaigiAttendanceRate)}
+          />
         </div>
         <Provenance sourceUrl={item.sourceUrl} updatedAt={item.updatedAt} />
       </CardContent>

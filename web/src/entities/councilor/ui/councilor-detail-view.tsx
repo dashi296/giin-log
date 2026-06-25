@@ -1,4 +1,12 @@
-import { Badge, Card, CardContent, CardHeader, CardTitle, StatBadge, Provenance } from "@/shared/ui"
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  StatBadge,
+  Provenance,
+} from "@/shared/ui"
 import type { CouncilorDetail } from "../api/get-councilor-detail.js"
 
 function formatRate(rate: number | null): string {
@@ -12,14 +20,23 @@ export function CouncilorDetailView({ detail }: { detail: CouncilorDetail }) {
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">{councilor.name}</h1>
         {membership?.faction ? <Badge>{membership.faction}</Badge> : null}
-        <Provenance sourceUrl={councilor.sourceUrl} updatedAt={councilor.updatedAt} />
+        <Provenance
+          sourceUrl={councilor.sourceUrl}
+          updatedAt={councilor.updatedAt}
+        />
       </header>
 
       {stats ? (
         <div className="flex gap-2">
-          <StatBadge label="一般質問" value={String(stats.generalQuestionCount)} />
+          <StatBadge
+            label="一般質問"
+            value={String(stats.generalQuestionCount)}
+          />
           <StatBadge label="発言件数" value={String(stats.statementCount)} />
-          <StatBadge label="本会議出席率" value={formatRate(stats.honkaigiAttendanceRate)} />
+          <StatBadge
+            label="本会議出席率"
+            value={formatRate(stats.honkaigiAttendanceRate)}
+          />
         </div>
       ) : null}
 
@@ -37,8 +54,13 @@ export function CouncilorDetailView({ detail }: { detail: CouncilorDetail }) {
                 </p>
               </CardHeader>
               <CardContent className="space-y-2">
-                {t.statement.body ? <p className="text-sm">{t.statement.body}</p> : null}
-                <Provenance sourceUrl={t.statement.sourceUrl} updatedAt={t.statement.updatedAt} />
+                {t.statement.body ? (
+                  <p className="text-sm">{t.statement.body}</p>
+                ) : null}
+                <Provenance
+                  sourceUrl={t.statement.sourceUrl}
+                  updatedAt={t.statement.updatedAt}
+                />
               </CardContent>
             </Card>
           ))

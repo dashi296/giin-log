@@ -4,7 +4,9 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator"
 import { MIGRATIONS_FOLDER, applySeed, schema } from "@giin-log/db"
 import type { AppDb } from "./types.js"
 
-export function makeWebTestDb(seed = true): {
+export function makeWebTestDb(
+  seed = true,
+): {
   db: AppDb
   sqlite: Database.Database
 } {

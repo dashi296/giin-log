@@ -11,13 +11,11 @@ export interface TimelineItem {
 export interface CouncilorDetail {
   councilor: Councilor
   membership: Membership | undefined
-  stats:
-    | {
-        generalQuestionCount: number
-        statementCount: number
-        honkaigiAttendanceRate: number | null
-      }
-    | undefined
+  stats: {
+    generalQuestionCount: number
+    statementCount: number
+    honkaigiAttendanceRate: number | null
+  } | undefined
   timeline: TimelineItem[]
 }
 

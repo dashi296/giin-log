@@ -1,10 +1,9 @@
-export function StatBadge({
-  label,
-  value,
-}: {
+type StatBadgeProps = {
   label: string
   value: string
-}) {
+}
+
+export function StatBadge({ label, value }: StatBadgeProps) {
   return (
     <span className="inline-flex flex-col rounded-md border border-neutral-200 px-3 py-1">
       <span className="text-xs text-neutral-500">{label}</span>
