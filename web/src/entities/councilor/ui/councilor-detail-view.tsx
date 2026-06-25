@@ -8,10 +8,7 @@ import {
   Provenance,
 } from "@/shared/ui"
 import type { CouncilorDetail } from "../api/get-councilor-detail.js"
-
-function formatRate(rate: number | null): string {
-  return rate === null ? "—" : `${Math.round(rate * 100)}%`
-}
+import { formatRate } from "../lib/format-rate.js"
 
 export function CouncilorDetailView({ detail }: { detail: CouncilorDetail }) {
   const { councilor, membership, stats, timeline } = detail

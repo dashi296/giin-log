@@ -8,10 +8,7 @@ import {
   StatBadge,
 } from "@/shared/ui"
 import type { CouncilorListItem } from "../model/index.js"
-
-function formatRate(rate: number | null): string {
-  return rate === null ? "—" : `${Math.round(rate * 100)}%`
-}
+import { formatRate } from "../lib/format-rate.js"
 
 export function CouncilorCard({ item }: { item: CouncilorListItem }) {
   return (

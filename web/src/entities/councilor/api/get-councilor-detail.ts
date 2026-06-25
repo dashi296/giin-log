@@ -77,7 +77,12 @@ export async function getCouncilorDetail(
       schema.meetings,
       eq(schema.meetings.id, schema.statements.meetingId),
     )
-    .where(eq(schema.statements.councilorId, councilor.id))
+    .where(
+      and(
+        eq(schema.statements.councilorId, councilor.id),
+        eq(schema.meetings.termId, termId),
+      ),
+    )
     .orderBy(desc(schema.meetings.heldOn), asc(schema.statements.sequence))
     .all()
 
