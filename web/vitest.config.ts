@@ -8,6 +8,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
-    server: { deps: { inline: ["@giin-log/db"] } },
+    server: {
+      // react-remove-scroll/tslib: radix-ui needs tslib at runtime under jsdom
+      deps: { inline: ["@giin-log/db", "react-remove-scroll", "tslib"] },
+    },
   },
 })
