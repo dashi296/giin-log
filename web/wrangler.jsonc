@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "giin-log",
+  "main": "@tanstack/react-start/server-entry",
+  "compatibility_date": "2026-06-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "giin-log",
+      // ローカル開発(`wrangler ... --local`)では実 ID 不要のためプレースホルダ。
+      // クラウドへ `wrangler deploy` する前に、`wrangler d1 create giin-log` で
+      // 得た実 ID(秘匿情報ではない)に必ず差し替えること。このプレースホルダの
+      // ままだとデプロイは失敗する。本番 D1 作成・デプロイは別計画(Plan 2.z)。
+      "database_id": "local-dev-placeholder",
+      "migrations_dir": "../db/drizzle"
+    }
+  ]
+}

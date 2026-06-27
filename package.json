@@ -10,8 +10,15 @@
     "typecheck": "pnpm -r typecheck"
   },
   "packageManager": "pnpm@9.7.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "lightningcss"
+    ]
+  },
   "devDependencies": {
-    "oxlint": "^0.9.0",
-    "oxfmt": "^0.1.0"
+    "oxfmt": "^0.1.0",
+    "oxlint": "^0.9.0"
   }
 }
